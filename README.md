@@ -5,6 +5,8 @@
 
 LPD Server and Client for PHP language.
 
+Check full documentation here: [opensource.duma.sh/libraries/php/lpd](https://opensource.duma.sh/libraries/php/lpd)
+
 ## Install
 
 Via Composer
