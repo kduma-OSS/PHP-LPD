@@ -14,29 +14,18 @@ class PrintService
 {
     use DebugHandlerTrait;
 
-    /**
-     * @var Configuration
-     */
-    protected $configuration;
+    protected Configuration $configuration;
 
-    /**
-     * LPDPrintService constructor.
-     *
-     * @param Configuration $configuration
-     */
     public function __construct(Configuration $configuration)
     {
         $this->configuration = $configuration;
     }
 
     /**
-     * @param JobInterface $job
-     *
-     * @return string
      * @throws PrintErrorException
      * @throws InvalidJobException
      */
-    public function sendJob(JobInterface $job)
+    public function sendJob(JobInterface $job): void
     {
         if (!$job->isValid($error_message, $error_number))
             throw new InvalidJobException($error_message, $error_number);
@@ -74,7 +63,7 @@ class PrintService
         fwrite($stream, sprintf("%s%s dfA%s%s\n", chr(3), $job->getContentLength(), $jobId, $server));
         $this->debug("Confirmation of sending receive data cmd:" . ord(fread($stream, 1)));
 
-        $job->streamContent($stream, function ($message) {
+        $job->streamContent($stream, function (string $message): void {
             $this->debug($message);
         });
 
@@ -85,7 +74,7 @@ class PrintService
     /**
      * @throws PrintErrorException
      */
-    private function printWaiting()
+    private function printWaiting(): void
     {
         $stream = stream_socket_client(
             sprintf("tcp://%s:%s", $this->configuration->getAddress(), $this->configuration->getPort()),
@@ -104,15 +93,12 @@ class PrintService
 
     }
 
-    private static function getJobId()
+    private static function getJobId(): string
     {
         return "001";
     }
 
-    /**
-     * @return mixed|string
-     */
-    private function getServerName()
+    private function getServerName(): string
     {
         return (isset($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : "me";
     }
