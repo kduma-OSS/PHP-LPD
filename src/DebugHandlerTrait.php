@@ -9,27 +9,16 @@ use KDuma\LPD\Client\PrintService;
 
 trait DebugHandlerTrait
 {
-    /**
-     * @var callable
-     */
-    protected $debug_handler;
+    protected ?callable $debug_handler = null;
 
-    /**
-     * @param callable $debug_handler
-     *
-     * @return self
-     */
-    public function setDebugHandler($debug_handler): self
+    public function setDebugHandler(callable $debug_handler): self
     {
         $this->debug_handler = $debug_handler;
 
         return $this;
     }
 
-    /**
-     * @param $message
-     */
-    protected function debug($message)
+    protected function debug(string $message): void
     {
         if ($this->debug_handler) {
             $handler = $this->debug_handler;
