@@ -11,35 +11,12 @@ class Configuration
     const ONE_MINUTE         = 60;
     const DEFAULT_QUEUE_NAME = 'default';
 
-    /**
-     * @var integer LPD Port
-     */
-    protected $port = self::LPD_DEFAULT_PORT;
+    protected int $port = self::LPD_DEFAULT_PORT;
+    protected string $address;
+    protected string $queue = self::DEFAULT_QUEUE_NAME;
+    protected int $timeout = self::ONE_MINUTE;
 
-    /**
-     * @var string LPD Address
-     */
-    protected $address;
-
-    /**
-     * @var string LPD Queue Name
-     */
-    protected $queue = self::DEFAULT_QUEUE_NAME;
-
-    /**
-     * @var string Timeout in seconds
-     */
-    protected $timeout = self::ONE_MINUTE;
-
-    /**
-     * LPDPrinterConfiguration constructor.
-     *
-     * @param string $address Address
-     * @param string $queue   Queue Name
-     * @param int    $port    Port
-     * @param int    $timeout
-     */
-    public function __construct($address, $queue = self::DEFAULT_QUEUE_NAME, $port = self::LPD_DEFAULT_PORT, $timeout = self::ONE_MINUTE)
+    public function __construct(string $address, string $queue = self::DEFAULT_QUEUE_NAME, int $port = self::LPD_DEFAULT_PORT, int $timeout = self::ONE_MINUTE)
     {
         $this->port = $port;
         $this->address = $address;
@@ -47,47 +24,27 @@ class Configuration
         $this->timeout = $timeout;
     }
 
-    /**
-     * @param string $address
-     * @param string $queue
-     * @param int    $port
-     * @param int    $timeout
-     *
-     * @return Configuration
-     */
-    public static function make($address, $queue = self::DEFAULT_QUEUE_NAME, $port = self::LPD_DEFAULT_PORT, $timeout = self::ONE_MINUTE)
+    public static function make(string $address, string $queue = self::DEFAULT_QUEUE_NAME, int $port = self::LPD_DEFAULT_PORT, int $timeout = self::ONE_MINUTE): self
     {
         return new self($address, $queue, $port, $timeout);
     }
 
-    /**
-     * @return int
-     */
-    public function getPort()
+    public function getPort(): int
     {
         return $this->port;
     }
 
-    /**
-     * @return string
-     */
-    public function getAddress()
+    public function getAddress(): string
     {
         return $this->address;
     }
 
-    /**
-     * @return string
-     */
-    public function getQueue()
+    public function getQueue(): string
     {
         return $this->queue;
     }
 
-    /**
-     * @return string
-     */
-    public function getTimeout()
+    public function getTimeout(): int
     {
         return $this->timeout;
     }
