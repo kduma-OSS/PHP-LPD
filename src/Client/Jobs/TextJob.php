@@ -26,11 +26,19 @@ class TextJob implements JobInterface
         return $this;
     }
 
-    public function appdendContent(string $content): self
+    public function appendContent(string $content): self
     {
         $this->content .= $content;
 
         return $this;
+    }
+
+    /** @deprecated Use appendContent() instead */
+    public function appdendContent(string $content): self
+    {
+        trigger_error('appdendContent() is deprecated, use appendContent() instead.', E_USER_DEPRECATED);
+
+        return $this->appendContent($content);
     }
 
     public function getContentLength(): int
