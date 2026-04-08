@@ -1,78 +1,44 @@
-# PHP-LPD
+# PHP LPD
 
-[![Latest Version on Packagist][ico-version]][link-packagist]
-[![Total Downloads][ico-downloads]][link-downloads]
+LPD (Line Printer Daemon) client and server implementation in pure PHP.
 
-A pure PHP LPD (Line Printer Daemon) Server and Client implementation with full type hints and strict types.
-
-Check full documentation here: [opensource.duma.sh/libraries/php/lpd](https://opensource.duma.sh/libraries/php/lpd)
+Full documentation: [opensource.duma.sh/libraries/php/lpd](https://opensource.duma.sh/libraries/php/lpd)
 
 ## Requirements
 
 - PHP `^8.3`
 
-## Install
-
-Via Composer
+## Installation
 
 ```bash
-$ composer require kduma/lpd
+composer require kduma/lpd
 ```
 
 ## Usage
 
-### Server
-``` php
-(new KDuma\LPD\Server\Server())
-	->setAddress($address)
-	->setPort($port)
-	->setMaxConnections($max_connections)
-	->setHandler(function ($incoming_data, $ctrl) {
-		echo $incoming_data; // Do something with it!
-	})
-	->run();
-```
-
 ### Client
 
-#### Text print job
+```php
+$configuration = new KDuma\LPD\Client\Configuration(
+    address: '192.168.1.100',
+    queue: 'PASSTHRU',
+    port: 515,
+    timeout: 30,
+);
 
-For printing clear text use `TextJob` class:
-``` php
-$job = new KDuma\LPD\Client\Jobs\TextJob("This is content!");
-$job->appdendContent("\n");
-$job->appdendContent("And this is second line.");
+$job = new KDuma\LPD\Client\Jobs\TextJob("Hello, Printer!");
+
+(new KDuma\LPD\Client\PrintService($configuration))->sendJob($job);
 ```
 
-#### File print job
+### Server
 
-For printing files, text or binary, use `FileJob` class:
-``` php
-$job = new KDuma\LPD\Client\Jobs\FileJob("my_raw_file.txt");
+```php
+(new KDuma\LPD\Server\Server())
+    ->setAddress('0.0.0.0')
+    ->setPort(515)
+    ->setHandler(function (string $data, mixed $ctrl): void {
+        echo $data;
+    })
+    ->run();
 ```
-
-#### Print Service
-
-``` php
-$configuration = new KDuma\LPD\Client\Configuration($address, $queue_name, $port, $timeout);
-
-$print_service = new KDuma\LPD\Client\PrintService($configuration);
-
-$print_service->sendJob($job);
-```
-
-# Original Attribution
-
-This package is based on classes created by [Ivan Bozhanov](https://github.com/vakata) 
-([server](https://github.com/vakata/php-lpd/blob/master/class.lpd.php), 2013) 
-and Mick Sear 
-([client](https://github.com/vakata/php-lpd/blob/master/example/class.lpr.php), 2005).
-
-
-
-
-[ico-version]: https://img.shields.io/packagist/v/kduma/lpd.svg?style=flat-square
-[ico-downloads]: https://img.shields.io/packagist/dt/kduma/lpd.svg?style=flat-square
-
-[link-packagist]: https://packagist.org/packages/kduma/lpd
-[link-downloads]: https://packagist.org/packages/kduma/lpd
