@@ -3,9 +3,13 @@
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Total Downloads][ico-downloads]][link-downloads]
 
-LPD Server and Client for PHP language.
+A pure PHP LPD (Line Printer Daemon) Server and Client implementation with full type hints and strict types.
 
 Check full documentation here: [opensource.duma.sh/libraries/php/lpd](https://opensource.duma.sh/libraries/php/lpd)
+
+## Requirements
+
+- PHP `^8.3`
 
 ## Install
 
