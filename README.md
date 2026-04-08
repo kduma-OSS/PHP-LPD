@@ -1,5 +1,9 @@
 # PHP LPD
 
+[![Latest Stable Version](https://poser.pugx.org/kduma/lpd/v/stable.svg)](https://packagist.org/packages/kduma/lpd)
+[![Total Downloads](https://poser.pugx.org/kduma/lpd/downloads.svg)](https://packagist.org/packages/kduma/lpd)
+[![License](https://poser.pugx.org/kduma/lpd/license.svg)](https://packagist.org/packages/kduma/lpd)
+
 LPD (Line Printer Daemon) client and server implementation in pure PHP.
 
 Full documentation: [opensource.duma.sh/libraries/php/lpd](https://opensource.duma.sh/libraries/php/lpd)
