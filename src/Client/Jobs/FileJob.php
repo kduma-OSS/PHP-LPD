@@ -1,47 +1,30 @@
 <?php
 
+declare(strict_types=1);
 
 namespace KDuma\LPD\Client\Jobs;
 
 
 class FileJob implements JobInterface
 {
-    /**
-     * @var string
-     */
-    protected $file_name;
+    protected string $file_name;
 
-    /**
-     * FileJob constructor.
-     *
-     * @param string $file_name
-     */
-    public function __construct($file_name)
+    public function __construct(string $file_name)
     {
         $this->file_name = $file_name;
     }
 
-    /**
-     * @return string
-     */
-    public function getFileName()
+    public function getFileName(): string
     {
         return $this->file_name;
     }
 
-    /**
-     * @return int
-     */
-    public function getContentLength()
+    public function getContentLength(): int
     {
-        return filesize($this->file_name);
+        return (int) filesize($this->file_name);
     }
 
-    /**
-     * @param resource $stream
-     * @param callable $debug
-     */
-    public function streamContent($stream, $debug)
+    public function streamContent(mixed $stream, callable $debug): void
     {
         $handler = $this->getFileHandler($debug);
 
@@ -52,12 +35,7 @@ class FileJob implements JobInterface
         fclose($handler);
     }
 
-    /**
-     * @param callable $debug
-     *
-     * @return resource
-     */
-    private function getFileHandler($debug)
+    private function getFileHandler(callable $debug): mixed
     {
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
             $debug("Operating system is Windows");
@@ -69,13 +47,7 @@ class FileJob implements JobInterface
         return fopen($this->file_name, "r");
     }
 
-    /**
-     * @param $error_message
-     * @param $error_number
-     *
-     * @return bool
-     */
-    public function isValid(&$error_message, &$error_number)
+    public function isValid(string &$error_message, int &$error_number): bool
     {
         if (is_readable($this->file_name))
             return true;

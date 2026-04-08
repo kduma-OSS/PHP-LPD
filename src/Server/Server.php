@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace KDuma\LPD\Server;
 
 use Exception;
@@ -12,87 +14,47 @@ class Server
 
     use DebugHandlerTrait;
 
-    /**
-     * @var resource|null
-     */
-    private $socket = null;
+    private ?\Socket $socket = null;
+    private ?callable $handler = null;
+    private string $address = '127.0.0.1';
+    private int $port = self::LPD_DEFAULT_PORT;
+    private int $max_connections = 5;
 
-    /**
-     * @var null
-     */
-    private $handler = null;
-
-    /**
-     * @var string
-     */
-    private $address = '127.0.0.1';
-
-    /**
-     * @var int
-     */
-    private $port = self::LPD_DEFAULT_PORT;
-
-    /**
-     * @var int
-     */
-    private $max_connections = 5;
-
-    /**
-     * @param null $handler
-     *
-     * @return Server
-     */
-    public function setHandler($handler): Server
+    public function setHandler(?callable $handler): Server
     {
         $this->handler = $handler;
         return $this;
     }
 
-    /**
-     * @param string $address
-     *
-     * @return Server
-     */
     public function setAddress(string $address): Server
     {
         $this->address = $address;
         return $this;
     }
 
-    /**
-     * @param int $port
-     *
-     * @return Server
-     */
     public function setPort(int $port): Server
     {
         $this->port = $port;
         return $this;
     }
 
-    /**
-     * @param int $max_connections
-     *
-     * @return Server
-     */
     public function setMaxConnections(int $max_connections): Server
     {
         $this->max_connections = $max_connections;
         return $this;
     }
 
-    /**
-     *
-     */
     public function __destruct()
     {
-        @socket_close($this->socket);
+        if ($this->socket instanceof \Socket) {
+            socket_close($this->socket);
+        }
     }
 
     /**
      * @throws SocketErrorException
      */
-    public function run()
+    public function run(): void
     {
         if (($this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP)) === false) {
             throw new SocketErrorException('socket_create() failed: reason: ' . socket_strerror(socket_last_error()));
@@ -114,14 +76,10 @@ class Server
     }
 
     /**
-     * @param      $msgsock
-     * @param bool $receive_mode
-     * @param null $control_file
-     *
      * @throws SocketErrorException
      * @throws Exception
      */
-    protected function read_command($msgsock, $receive_mode = false, $control_file = null)
+    protected function read_command(mixed $msgsock, bool $receive_mode = false, ?string $control_file = null): void
     {
         if (false === ($buff = socket_read($msgsock, 4096, PHP_NORMAL_READ))) {
             throw new SocketErrorException('socket_read() failed: reason: ' . socket_strerror(socket_last_error($msgsock)));
@@ -132,13 +90,9 @@ class Server
     }
 
     /**
-     * @param $msgsock
-     * @param $bytes
-     *
-     * @return string
      * @throws SocketErrorException
      */
-    protected function read_bytes($msgsock, $bytes)
+    protected function read_bytes(mixed $msgsock, int $bytes): string
     {
         $content = '';
         do {
@@ -151,17 +105,11 @@ class Server
     }
 
     /**
-     * @param      $msgsock
-     * @param      $command
-     * @param      $arguments
-     * @param      $receive_mode
-     * @param null $control_file
-     *
      * @throws Exception
      */
-    protected function process_command($msgsock, $command, $arguments, $receive_mode, $control_file = null)
+    protected function process_command(mixed $msgsock, int $command, array $arguments, bool $receive_mode, ?string $control_file = null): void
     {
-        $this->debug($command);
+        $this->debug((string) $command);
         switch ($command) {
             case 1:
                 socket_write($msgsock, chr(0));
@@ -174,7 +122,7 @@ class Server
                     $this->read_command($msgsock, $receive_mode);
                 } else {
                     socket_write($msgsock, chr(0));
-                    $control_file = $this->read_bytes($msgsock, $arguments[0]);
+                    $control_file = $this->read_bytes($msgsock, (int) $arguments[0]);
                     socket_write($msgsock, chr(0));
                     $this->read_command($msgsock, $receive_mode, $control_file);
                 }
@@ -185,7 +133,7 @@ class Server
                     $this->read_command($msgsock, $receive_mode);
                 } else {
                     socket_write($msgsock, chr(0));
-                    $data = $this->read_bytes($msgsock, $arguments[0]);
+                    $data = $this->read_bytes($msgsock, (int) $arguments[0]);
                     socket_write($msgsock, chr(0));
                     socket_close($msgsock);
                     $this->process_data($data, $control_file);
@@ -197,11 +145,7 @@ class Server
         }
     }
 
-    /**
-     * @param $data
-     * @param $control_file
-     */
-    protected function process_data($data, $control_file)
+    protected function process_data(string $data, ?string $control_file): void
     {
         $data = preg_split('(\n)', $data);
         $dump = [];

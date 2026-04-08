@@ -1,33 +1,26 @@
 <?php
 
+declare(strict_types=1);
 
 namespace KDuma\LPD\Client\DebugHandler;
 
 
 class BasicDebugHandler
 {
-    /**
-     * @var string[]
-     */
-    protected $messages = [];
+    /** @var string[] */
+    protected array $messages = [];
 
-    /**
-     * @param $message
-     */
-    public function __invoke($message)
+    public function __invoke(string $message): void
     {
         $this->messages[] = $message;
     }
 
-    public function clearLog()
+    public function clearLog(): void
     {
         $this->messages = [];
     }
 
-    /**
-     * @return string
-     */
-    public function getLog()
+    public function getLog(): string
     {
         return implode("\n", $this->messages);
     }
