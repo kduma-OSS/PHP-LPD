@@ -27,6 +27,8 @@ class PrintService
      */
     public function sendJob(JobInterface $job): void
     {
+        $error_message = '';
+        $error_number = 0;
         if (!$job->isValid($error_message, $error_number))
             throw new InvalidJobException($error_message, $error_number);
 
@@ -76,6 +78,8 @@ class PrintService
      */
     private function printWaiting(): void
     {
+        $error_message = '';
+        $error_number = 0;
         $stream = stream_socket_client(
             sprintf("tcp://%s:%s", $this->configuration->getAddress(), $this->configuration->getPort()),
             $error_number,
