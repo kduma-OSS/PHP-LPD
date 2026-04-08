@@ -14,7 +14,7 @@ class Server
 
     use DebugHandlerTrait;
 
-    private mixed $socket = null;
+    private ?\Socket $socket = null;
     private ?callable $handler = null;
     private string $address = '127.0.0.1';
     private int $port = self::LPD_DEFAULT_PORT;
@@ -46,7 +46,9 @@ class Server
 
     public function __destruct()
     {
-        @socket_close($this->socket);
+        if ($this->socket instanceof \Socket) {
+            socket_close($this->socket);
+        }
     }
 
     /**
@@ -90,7 +92,7 @@ class Server
     /**
      * @throws SocketErrorException
      */
-    protected function read_bytes(mixed $msgsock, mixed $bytes): string
+    protected function read_bytes(mixed $msgsock, int $bytes): string
     {
         $content = '';
         do {
@@ -120,7 +122,7 @@ class Server
                     $this->read_command($msgsock, $receive_mode);
                 } else {
                     socket_write($msgsock, chr(0));
-                    $control_file = $this->read_bytes($msgsock, $arguments[0]);
+                    $control_file = $this->read_bytes($msgsock, (int) $arguments[0]);
                     socket_write($msgsock, chr(0));
                     $this->read_command($msgsock, $receive_mode, $control_file);
                 }
@@ -131,7 +133,7 @@ class Server
                     $this->read_command($msgsock, $receive_mode);
                 } else {
                     socket_write($msgsock, chr(0));
-                    $data = $this->read_bytes($msgsock, $arguments[0]);
+                    $data = $this->read_bytes($msgsock, (int) $arguments[0]);
                     socket_write($msgsock, chr(0));
                     socket_close($msgsock);
                     $this->process_data($data, $control_file);
