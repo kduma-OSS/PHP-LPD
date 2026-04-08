@@ -7,77 +7,43 @@ namespace KDuma\LPD\Client\Jobs;
 
 class TextJob implements JobInterface
 {
-    /**
-     * @var string|string
-     */
-    protected $content;
+    protected string $content;
 
-    /**
-     * Job constructor.
-     *
-     * @param string $content
-     */
-    public function __construct($content = "")
+    public function __construct(string $content = "")
     {
         $this->content = $content;
     }
 
-    /**
-     * @return string
-     */
-    public function getContent()
+    public function getContent(): string
     {
         return $this->content;
     }
 
-    /**
-     * @param string $content
-     *
-     * @return TextJob
-     */
-    public function setContent($content): self
+    public function setContent(string $content): self
     {
         $this->content = $content;
 
         return $this;
     }
 
-    /**
-     * @param string $content
-     *
-     * @return TextJob
-     */
-    public function appdendContent($content): self
+    public function appdendContent(string $content): self
     {
         $this->content .= $content;
 
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getContentLength()
+    public function getContentLength(): int
     {
         return strlen($this->content);
     }
 
-    /**
-     * @param resource $stream
-     * @param callable $debug
-     */
-    public function streamContent($stream, $debug)
+    public function streamContent(mixed $stream, callable $debug): void
     {
         fwrite($stream, $this->getContent());
     }
 
-    /**
-     * @param $error_message
-     * @param $error_number
-     *
-     * @return bool|string
-     */
-    public function isValid(&$error_message, &$error_number)
+    public function isValid(string &$error_message, int &$error_number): bool
     {
         return true;
     }
